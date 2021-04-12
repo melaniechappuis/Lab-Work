@@ -12,10 +12,10 @@
     print("Eager mode enabled: ", tf.executing_eagerly())
     print("GPU available: ", tf.test.is_gpu_available())
 
- TF Version:  2.4.1
- TF-Hub version:  0.11.0
- Eager mode enabled:  True
- GPU available:  False
+TF Version:  2.4.1
+TF-Hub version:  0.11.0
+Eager mode enabled:  True
+GPU available:  False
  
    
     def crop_center(image):
@@ -80,6 +80,50 @@
     hub_module = hub.load(hub_handle)
     
     
+    outputs = hub_module(tf.constant(content_image), tf.constant(style_image))
+    stylized_image = outputs[0]
     
     
+    show_n([content_image, style_image, stylized_image], titles=['Original content image', 'Style image', 'Stylized image'])
+    
+   
+    <img width="1323" alt="111" src="https://user-images.githubusercontent.com/73337770/114380679-9e62cf80-9b8a-11eb-9e4a-928f48cb960b.png">
  
+    content_urls = dict(
+    tree_rome='https://freight.cargo.site/w/700/q/75/i/f5b40cad9f62b64336b97b464cafd4a5c73731d48c9f39101180ebce18f17fc7/a22222.jpg',
+    mountains='https://freight.cargo.site/w/700/q/75/i/ee2abc0fef2209851307be33daa461c4e8bf9ee802d35ad945a0e7c187fef230/DSC_0039.jpg',
+    julia='https://freight.cargo.site/w/3000/q/75/i/224f2a2fbb3364928a8c3162b0650426958c13e43bd98f8afa03e2e16eeb6d3e/julia.jpg',
+    monprofil='https://freight.cargo.site/w/711/q/75/i/4dfdb07a13525a23ee0deb42040067b7ad09680cc12e5fa325201dc518ba95bb/fprofil.jpg'
+    )
+    style_urls = dict(
+    poster_metaform='https://freight.cargo.site/w/1500/q/75/i/af645b984de76db3450cf5788634dac34a15c84d041e18fdb5fa9c392a2904d3/metaformposterfinal.jpg',
+            voyager1='https://freight.cargo.site/w/1448/q/94/i/69e8fabcb84dd412eaa78dfd2448d73d7ef59ee40b30cfb3b67e38a69e05c24f/40406703_2326507840709274_8350644749710917632_o.jpeg',
+    familytree='https://freight.cargo.site/w/2631/q/94/i/0321bc064d0fa1e2d771d258accc2d9ece499711af0d7df5c2795bea6acc5b67/treepainting.jpg',
+    portugal='https://freight.cargo.site/w/2335/q/75/i/1bef452041855c0ef6aa5cea15f4aae44f904c1e0f23b95acb21c2f4f816bd3a/a2222.jpg',
+    bubble='https://freight.cargo.site/w/600/q/75/i/a5ca95ac0bbc3d162d24eab276cfb734b66a926244adb8cdfe8aedd2eaa7e0df/1bubble.jpg',
+    rice_rat='https://freight.cargo.site/w/1000/q/75/i/46ad780d2e9e75427743a4d78851db4b411121702916c85517717368f313bb47/zuniga-s-dark-rice-rat.jpg',
+    om='https://freight.cargo.site/w/1500/q/75/i/725e28e4e8993de9e4a2eec489ed39e3df128fdce86824791929a7f186727afc/deepsleep-m.jpg',
+    mum='https://freight.cargo.site/w/1500/q/75/i/df111c788a01b96edab8dffc59725cd2d7322386373bb2ec21c1133506f0b52a/mamann.jpg',
+
+    )
+
+    content_image_size = 384
+    style_image_size = 384
+    content_images = {k: load_image(v, (content_image_size, content_image_size)) for k, v in content_urls.items()}
+    style_images = {k: load_image(v, (style_image_size, style_image_size)) for k, v in style_urls.items()}
+    style_images = {k: tf.nn.avg_pool(style_image, ksize=[3,3], strides=[1,1], padding='SAME') for k, style_image in style_images.items()}
+
+    
+    content_name = 'monprofil'  # @param ['sea_turtle', 'tuebingen', 'grace_hopper']
+    style_name = 'mum'  # @param ['kanagawa_great_wave', 'kandinsky_composition_7', 'hubble_pillars_of_creation', 'van_gogh_starry_night', 'turner_nantes', 'munch_scream', 'picasso_demoiselles_avignon', 'picasso_violin', 'picasso_bottle_of_rum', 'fire', 'derkovits_woman_head', 'amadeo_style_life', 'derkovtis_talig', 'amadeo_cardoso']
+
+    stylized_image = hub_module(tf.constant(content_images[content_name]),
+                            tf.constant(style_images[style_name]))[0]
+
+    show_n([content_images[content_name], style_images[style_name], stylized_image],
+       titles=['Original content image', 'Style image', 'Stylized image'])
+    
+    
+   <img width="1209" alt="342" src="https://user-images.githubusercontent.com/73337770/114381168-1d580800-9b8b-11eb-993c-131bba71d66b.png">
+
+    
